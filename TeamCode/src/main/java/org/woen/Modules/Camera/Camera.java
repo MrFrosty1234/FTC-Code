@@ -6,6 +6,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.CameraControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
@@ -20,6 +23,7 @@ import org.woen.Utility.Team.TEAM;
 
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 @Config
@@ -48,6 +52,7 @@ public class Camera implements RobotModule {
     public static int height = 600;
 
     public static int width = 800;
+
 
     public static TEAM TEAM = null;
 
@@ -80,6 +85,8 @@ public class Camera implements RobotModule {
         return pos;
     }
 
+    ExposureControl exposureControl = null;
+
 
 
     @Override
@@ -100,15 +107,25 @@ public class Camera implements RobotModule {
 
         builder.addProcessor(aprilTag);
 
+
         builder.setCameraResolution(new Size(width, height));
 
+
+
         visionPortal = builder.build();
+
+
+
     }
 
 
     @Override
     public void update() {
         List<AprilTagDetection> currentDetectionList = aprilTag.getDetections();
+
+
+
+        exposureControl.setExposure((long) (1/visionPortal.getFps()), TimeUnit.SECONDS);
 
         if (!currentDetectionList.isEmpty()) {
             for (AprilTagDetection tag : currentDetectionList) {

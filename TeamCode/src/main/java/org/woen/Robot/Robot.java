@@ -2,11 +2,14 @@ package org.woen.Robot;
 
 import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.woen.Modules.Camera.Camera;
 import org.woen.Modules.DriveTrain.DriveTrain;
+import org.woen.Modules.IntakeAndShooter.FSM.IntakeStateMachine;
 import org.woen.Modules.Odometery.Odometry;
 import org.woen.Modules.Interface.RobotModule;
+import org.woen.Modules.Servo.ServoMovement;
 import org.woen.Pools.DevicePool.DevicePool;
 
 import java.util.List;
@@ -22,17 +25,21 @@ public class Robot {
 
 
     public DevicePool devicePool = new DevicePool(linearOpMode.hardwareMap);
-
     public Odometry odometry = new Odometry(this);
     public DriveTrain driveTrain = new DriveTrain(this);
     public Camera camera = new Camera(this);
+    public ServoMovement servoMovement = new ServoMovement(this);
+    public IntakeStateMachine intakeStateMachine = new IntakeStateMachine(this);
 
     List<LynxModule> allHubs = linearOpMode.hardwareMap.getAll(LynxModule.class);
 
     private final RobotModule[] robotModule = new RobotModule[]{
             odometry,
             driveTrain,
-            camera
+            camera,
+            servoMovement,
+            intakeStateMachine
+
     };
 
     public void init(){
