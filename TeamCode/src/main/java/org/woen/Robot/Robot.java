@@ -39,7 +39,6 @@ public class Robot {
             camera,
             servoMovement,
             intakeStateMachine
-
     };
 
     public void init(){

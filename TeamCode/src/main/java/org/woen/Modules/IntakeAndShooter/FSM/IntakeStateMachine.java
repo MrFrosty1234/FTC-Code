@@ -49,6 +49,7 @@ public class IntakeStateMachine implements RobotModule {
     public void updateStates() {
         switch (state) {
             case EAT:
+                targetState = FSM_STATES.EAT;
                 rGun.setPower(0.5);
                 lGun.setPower(0.5);
 
@@ -85,6 +86,7 @@ public class IntakeStateMachine implements RobotModule {
                 setState(FSM_STATES.EAT);
                 break;
             case REVERSE_BRUSHES:
+                targetState = FSM_STATES.REVERSE_BRUSHES;
                 rGun.setPower(-1);
                 lGun.setPower(-1);
 
@@ -99,7 +101,7 @@ public class IntakeStateMachine implements RobotModule {
 
     @Override
     public void update() {
-        if(state != targetState)
+        if(state == targetState)
             time.reset();
         updateStates();
     }
