@@ -17,9 +17,7 @@ import java.util.concurrent.CancellationException;
 
 public class DevicePool {
 
-    public DcMotorEx sideOdometer;
-    public DcMotorEx leftOdometer;
-    public  DcMotorEx rightOdometer;
+    public DcMotorEx odometer;
 
     public DcMotorEx rM;
 
@@ -51,17 +49,12 @@ public class DevicePool {
     public Servo wall;
 
 
-
-    public DevicePool (HardwareMap hardwareMap){
+    public DevicePool(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
-    public void init(){
-        sideOdometer = hardwareMap.get(DcMotorEx.class, "sideOdometer");
-
-        leftOdometer = hardwareMap.get(DcMotorEx.class, "leftOdometer");
-
-        rightOdometer = hardwareMap.get(DcMotorEx.class, "rightOdometer");
+    public void init() {
+        odometer = hardwareMap.get(DcMotorEx.class, "odometer");
 
         gyro = hardwareMap.get(IMU.class, "gyro");
 

@@ -15,9 +15,7 @@ import org.woen.Robot.Robot;
 public class Odometry implements RobotModule {
 
 
-    DcMotorEx leftOdometer;
-    DcMotorEx rightOdometer;
-    DcMotorEx sideOdometer;
+   DcMotorEx odo;
 
     IMU gyro;
 
@@ -37,9 +35,7 @@ public class Odometry implements RobotModule {
 
     private Pose2D pos = MatchData.startPos;
 
-    double rightOld = 0 ;
-    double lefrOld = 0;
-    double sideOld = 0;
+    double odoOld = 0;
 
     public static double K_FOR_FILTER = 0.2;
 
@@ -59,11 +55,7 @@ public class Odometry implements RobotModule {
 
     @Override
     public void init() {
-        leftOdometer = robot.devicePool.leftOdometer;
-
-        rightOdometer = robot.devicePool.rightOdometer;
-
-        sideOdometer = robot.devicePool.sideOdometer;
+        odo = robot.devicePool.odometer;
 
         gyro = robot.devicePool.gyro;
 
@@ -73,31 +65,21 @@ public class Odometry implements RobotModule {
     public void reset(){
         gyro.resetYaw();
 
-        leftOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        sideOdometer.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
-        leftOdometer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightOdometer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sideOdometer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        odo.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        odo.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
     public void update(){
-        double rightOdEnc = rightOdometer.getCurrentPosition();
-        double leftOdEnc = leftOdometer.getCurrentPosition();
-        double sideOdEnc = sideOdometer.getCurrentPosition();
+        double odoPos = odo.getCurrentPosition();
 
         double angle = gyro.getRobotYawPitchRollAngles().getYaw();
 
-        double deltaR = rightOdEnc - rightOld;
-        double deltaL = leftOdEnc - lefrOld;
-        double deltaS = sideOdEnc - sideOld;
+        double deltaOdo = odoPos - odoOld;;
 
-        double phi = (deltaL - deltaR) / LATERAL_DISTANCE;
-        double deltaLROdo = (deltaL + deltaR) / 2.0;
-        double deltaPerpPos = deltaS - FORWARD_OFFSET * phi;
+        double phi =  deltaOdo / LATERAL_DISTANCE;
+        double deltaLROdo = deltaOdo;
+        double deltaPerpPos = deltaLROdo - FORWARD_OFFSET * phi;
 
 
         double deltaX = deltaLROdo * Math.cos(angle) - deltaPerpPos * Math.sin(angle);
@@ -114,28 +96,20 @@ public class Odometry implements RobotModule {
         pos.y /= crr;
         pos.h /= CM_TO_ROTATION_DEGREES_RATIO;
 
-        lefrOld = leftOdEnc;
-        rightOld = rightOdEnc;
-        sideOld = sideOdEnc;
+        odoOld = odoPos;
     }
 
     public Pose2D getPos(){
         return pos;
     }
 
-    public double getRealVelLeft(){
-        return calcRealVel.getCorrectedVel(leftOdometer);
-    }
-    public double getRealVelRight(){
-        return calcRealVel.getCorrectedVel(rightOdometer);
-    }
-    public double getReavlVelSide(){
-        return  calcRealVel.getCorrectedVel(sideOdometer);
+    public double getRealVel(){
+        return calcRealVel.getCorrectedVel(odo);
     }
 
     public double getRealVelHeading(){
         double angle = gyro.getRobotYawPitchRollAngles().getYaw();
-        double phi = (getRealVelLeft() - getRealVelRight()) / LATERAL_DISTANCE;
+        double phi = getRealVel() / LATERAL_DISTANCE;
         exponentialFilter.update(K_FOR_FILTER, angle,phi);
         return  exponentialFilter.getY();
     }

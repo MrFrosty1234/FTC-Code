@@ -155,7 +155,7 @@ public class DriveTrain implements RobotModule {
 
             pidVel.setTarget(maxVel);
 
-            double uVelX = pidVel.update(maxVel - (odometry.getRealVelLeft() + odometry.getRealVelRight()) / 2);
+            double uVelX = pidVel.update(maxVel - odometry.getRealVel());
 
 
             double uVelH = pidVel.update(maxVel - odometry.getRealVelHeading());
