@@ -34,11 +34,7 @@ public class Robot {
     List<LynxModule> allHubs = linearOpMode.hardwareMap.getAll(LynxModule.class);
 
     private final RobotModule[] robotModule = new RobotModule[]{
-            odometry,
-            driveTrain,
             camera,
-            servoMovement,
-            intakeStateMachine
     };
 
     public void init(){
