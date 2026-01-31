@@ -12,6 +12,7 @@ import static java.lang.Math.negateExact;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -24,57 +25,64 @@ import org.woen.Utility.PID.PID;
 public class DriveTrain implements RobotModule {
 
 
-    PID pidAngle = new PID(0,0,0,0,0,0,0); //TODO p,i,f
-    PID pidY = new PID(0,0,0,0,0,0,0); //TODO p,i,f
-    PID pidX = new PID(0,0,0,0,0,0,0); //TODO p,i,f
-    PID pidVel = new PID(0,0,0,0,0,0,0); //TODO  p,d
+    PID pidAngle = new PID(0, 0, 0, 0, 0, 0, 0); //TODO p,i,f
+    PID pidY = new PID(0, 0, 0, 0, 0, 0, 0); //TODO p,i,f
+    PID pidX = new PID(0, 0, 0, 0, 0, 0, 0); //TODO p,i,f
 
     Robot robot;
 
-    DcMotorEx r;
-    DcMotorEx l;
+    DriveTrainMode mode = DriveTrainMode.AUTO;
+
+    DcMotorEx rF;
+    DcMotorEx lF;
+    DcMotorEx rB;
+    DcMotorEx lB;
+
 
     Odometry odometry;
 
-    public DriveTrain(Robot robot){
+    public DriveTrain(Robot robot) {
         this.robot = robot;
         odometry = robot.odometry;
     }
 
 
     @Override
-    public void init(){
-        r = robot.devicePool.rM;
+    public void init() {
+        rF = robot.devicePool.rMF;
+        lF = robot.devicePool.lMF;
+        rB = robot.devicePool.rMB;
+        lB = robot.devicePool.lMB;
 
-        l = robot.devicePool.lM;
+        rF.setDirection(DcMotorSimple.Direction.REVERSE);
+        lF.setDirection(DcMotorSimple.Direction.FORWARD);
+        rB.setDirection(DcMotorSimple.Direction.REVERSE);
+        lB.setDirection(DcMotorSimple.Direction.FORWARD);
 
-
-        l.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        r.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        reset();
+        rF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lB.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public void reset(){
-        l.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        r.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        r.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        l.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+    public void stop() {
+        rF.setPower(0);
+        lF.setPower(0);
+        rB.setPower(0);
+        lB.setPower(0);
     }
 
-    public void stop(){
-        r.setPower(0);
-        l.setPower(0);
-    }
+    public void setPower(double x, double y, double h) {
+        double lF = x + y + h;
+        double rB = x + y - h;
+        double lB = x - y + h;
+        double rF = x - y - h;
 
-    public void setPower(double x, double h){
-        double l = x + h;
-        double r = x - h;
-
-        this.r.setPower(clip(r, -1, 1));
-        this.l.setPower(clip(l, -1, 1));
+        this.rB.setPower(clip(rB, -1, 1));
+        this.lF.setPower(clip(lF, -1, 1));
+        this.rF.setPower(clip(rF, -1, 1));
+        this.lB.setPower(clip(lB, -1, 1));
 
     }
 
@@ -83,40 +91,41 @@ public class DriveTrain implements RobotModule {
 
     public static double maxVel = 1;
 
-    double x ;
-    double y ;
-    double h ;
+    double x;
+    double y;
+    double h;
 
     private double errX = 0;
     private double errY = 0;
     private double errH = 0;
 
-    private double getErrX(){
-        return errX = x - odometry.getPos().x;
+    private double getErrX() {
+        return errX = x - odometry.getPosX();
     }
 
-    private double getErrY(){
-        return errY = y - odometry.getPos().y;
+    private double getErrY() {
+        return errY = y - odometry.getPosY();
     }
-    private double getErrH(){
-        errH = -atan2(errY,  errX);
-        if(errH > PI){
-            do{
+
+    private double getErrH() {
+        errH = -atan2(errY, errX);
+        if (errH > PI) {
+            do {
                 errH -= PI;
-            }while(errH > PI);
+            } while (errH > PI);
         }
-       if(errH < -PI){
-           do{
-               errH += PI;
-           }while (errH < - PI);
-       }
-       return errH;
+        if (errH < -PI) {
+            do {
+                errH += PI;
+            } while (errH < -PI);
+        }
+        return errH;
     }
 
     boolean stop = true;
 
 
-    public void setFieldPos(double x, double y, double h, double speed, boolean stop){
+    public void setFieldPos(double x, double y, double h, double speed, boolean stop) {
         time.reset();
 
         this.x = x;
@@ -126,7 +135,8 @@ public class DriveTrain implements RobotModule {
 
         maxVel = speed;
     }
-    public void setFieldPos(double x, double y, double h){
+
+    public void setFieldPos(double x, double y, double h) {
         time.reset();
 
         this.x = x;
@@ -138,34 +148,37 @@ public class DriveTrain implements RobotModule {
     }
 
     @Override
-    public boolean isAtTarget(){
-        return (x - odometry.getPos().x) > 5 && (y - odometry.getPos().y) > 5 && (h - odometry.getPos().h) > 5;
+    public boolean isAtTarget() {
+        return (x - odometry.getPosX()) > 5 && (y - odometry.getPosY()) > 5 && (h - odometry.getPosH()) > 5;
+    }
+
+    public void setMode(DriveTrainMode mod){
+        mode = mod;
     }
 
     @Override
-    public void update(){
+    public void update() {
+        switch (mode) {
+            case AUTO:
+                if (!isAtTarget() && time.seconds() < 6.9) {
+                    pidX.setTarget(x);
 
-        if(!isAtTarget() && time.seconds() < 6.9){
-            pidX.setTarget(x);
+                    pidAngle.setTarget(h);
 
-            pidAngle.setTarget(h);
-
-            double uX = pidX.update(getErrX());
-            double uH = pidAngle.update(getErrH());
-
-            pidVel.setTarget(maxVel);
-
-            double uVelX = pidVel.update(maxVel - odometry.getRealVel());
+                    double uX = pidX.update(getErrX());
+                    double uH = pidAngle.update(getErrH());
+                    double uY = pidY.update(getErrY());
 
 
-            double uVelH = pidVel.update(maxVel - odometry.getRealVelHeading());
 
-            setPower(uX + uVelX, uH + uVelH);
+                    setPower(uX , uY, uH);
+                }
+
+                if (stop)
+                    stop();
+            case MANUAL:
+
         }
-
-        if(stop)
-            stop();
-
     }
 
 

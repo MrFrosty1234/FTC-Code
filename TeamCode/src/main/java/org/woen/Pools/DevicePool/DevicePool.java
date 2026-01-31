@@ -1,52 +1,44 @@
 package org.woen.Pools.DevicePool;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorImplEx;
-import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.sun.tools.javac.tree.DCTree;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.woen.Modules.Camera.Camera;
-
-import java.util.concurrent.CancellationException;
 
 public class DevicePool {
 
     public DcMotorEx odometer;
 
-    public DcMotorEx rM;
+    public DcMotorEx rMF;
 
-    public DcMotorEx lM;
+    public DcMotorEx lMF;
+
+    public DcMotorEx rMB;
+
+    public DcMotorEx lMB;
+
 
     public IMU gyro;
 
-    public DcMotorEx rShooter;
+    public DcMotorEx shooterMotor;
 
-    public DcMotorEx lShooter;
 
 
     public WebcamName camera;
 
     private HardwareMap hardwareMap;
 
-    public Servo lEatServo;
+   public DcMotorEx brush;
 
-    public Servo cEatServo;
-
-    public Servo rEatServo;
-
-    public Servo rAngleServo;
-
-    public Servo cAngleServo;
-
-    public Servo lAngleServo;
-
+    public Servo angleServo;
     public Servo wall;
+    public Servo towerAngleServo;
+    public DcMotorEx flowMotor;
+
+    public GoBildaPinpointDriver pinpoint;
 
 
     public DevicePool(HardwareMap hardwareMap) {
@@ -54,34 +46,28 @@ public class DevicePool {
     }
 
     public void init() {
-        odometer = hardwareMap.get(DcMotorEx.class, "odometer");
 
-        gyro = hardwareMap.get(IMU.class, "gyro");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        rM = hardwareMap.get(DcMotorEx.class, "motorR");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "gun_motor_left");
 
-        lM = hardwareMap.get(DcMotorEx.class, "motorL");
+        lMF = hardwareMap.get(DcMotorEx.class, "left_front_vehicle_motor");
 
+        rMF = hardwareMap.get(DcMotorEx.class, "right_front_vehicle_motor");
 
-        camera = hardwareMap.get(WebcamName.class, "Webcam 1");
+        lMB = hardwareMap.get(DcMotorEx.class, "left_back_vehicle_motor");
 
-        rShooter = hardwareMap.get(DcMotorEx.class, "gunR");
+        rMF = hardwareMap.get(DcMotorEx.class, "right_back_vehicle_motor");
 
-        lShooter = hardwareMap.get(DcMotorEx.class, "gunL");
+        flowMotor = hardwareMap.get(DcMotorEx.class, "motor_flow");
 
-        lEatServo = hardwareMap.get(Servo.class, "shotL");
+        brush = hardwareMap.get(DcMotorEx.class, "motor_brush");
 
-        rEatServo = hardwareMap.get(Servo.class, "shotR");
+        wall = hardwareMap.get(Servo.class, "servo_door");
 
-        cEatServo = hardwareMap.get(Servo.class, "shotC");
+        angleServo = hardwareMap.get(Servo.class, "servo_angle_gun");
 
-        wall = hardwareMap.get(Servo.class, "wall");
-
-        rAngleServo = hardwareMap.get(Servo.class, "aimL");
-
-        lAngleServo = hardwareMap.get(Servo.class, "aimR");
-
-        cAngleServo = hardwareMap.get(Servo.class, "aimC");
+        towerAngleServo = hardwareMap.get(Servo.class, "servo_turn_tower");
 
     }
 }

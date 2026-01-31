@@ -82,13 +82,7 @@ public class ServoMovement implements RobotModule {
 
     @Override
     public void init() {
-        cEatServo = robot.devicePool.cEatServo;
-        rEatServo = robot.devicePool.rEatServo;
-        lEatServo = robot.devicePool.lEatServo;
 
-        cAngleServo = robot.devicePool.cEatServo;
-        rAngleServo = robot.devicePool.rAngleServo;
-        lAngleServo = robot.devicePool.lAngleServo;
 
         wall = robot.devicePool.wall;
         allEat();

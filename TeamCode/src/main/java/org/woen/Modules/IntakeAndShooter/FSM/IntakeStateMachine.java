@@ -36,8 +36,8 @@ public class IntakeStateMachine implements RobotModule {
     @Override
     public void init() {
         robot.servoMovement.init();
-        lGun = robot.devicePool.lShooter;
-        rGun = robot.devicePool.rShooter;
+
+        rGun = robot.devicePool.shooterMotor;
 
         lGun.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         rGun.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
