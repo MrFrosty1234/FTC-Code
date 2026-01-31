@@ -68,7 +68,7 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Disabled
+//@Disabled
 @TeleOp(name = "Concept: Vision Color-Locator (Circle)", group = "Concept")
 public class ConceptVisionColorLocator_Circle extends LinearOpMode {
     @Override
@@ -209,7 +209,10 @@ public class ConceptVisionColorLocator_Circle extends LinearOpMode {
             ColorBlobLocatorProcessor.Util.filterByCriteria(
                     ColorBlobLocatorProcessor.BlobCriteria.BY_CONTOUR_AREA,
                     50, 20000, blobs);  // filter out very small blobs.
-
+            //max is pidor ebany
+            //suck my dick my boy
+            // maxim huesos tupoy
+            //msxim ne umeet igrat v basketball on ne negr
             ColorBlobLocatorProcessor.Util.filterByCriteria(
                     ColorBlobLocatorProcessor.BlobCriteria.BY_CIRCULARITY,
                     0.6, 1, blobs);     /* filter out non-circular blobs.

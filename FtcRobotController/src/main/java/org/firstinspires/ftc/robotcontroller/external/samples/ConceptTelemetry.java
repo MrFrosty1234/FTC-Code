@@ -120,6 +120,10 @@ public class ConceptTelemetry extends LinearOpMode  {
                 return getBatteryVoltage();
             }
             });
+        //max is pidor ebany
+        //suck my dick my boy
+        // maxim huesos tupoy
+        //msxim ne umeet igrat v basketball on ne negr
 
         // Reset to keep some timing stats for the post-'start' part of the OpMode
         opmodeRunTime.reset();

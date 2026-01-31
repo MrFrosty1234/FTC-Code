@@ -8,12 +8,18 @@ import static org.opencv.imgproc.Imgproc.cvtColor;
 import static org.opencv.imgproc.Imgproc.findContours;
 import static org.opencv.imgproc.Imgproc.resize;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 
+import org.firstinspires.ftc.robotcore.external.function.Consumer;
+import org.firstinspires.ftc.robotcore.external.function.Continuation;
+import org.firstinspires.ftc.robotcore.external.stream.CameraStreamSource;
 import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibration;
 import org.firstinspires.ftc.vision.VisionProcessor;
+import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.Rect;
@@ -22,10 +28,13 @@ import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.imgproc.Moments;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 
 @Config
-public class DetectColor implements VisionProcessor {
-
+public class DetectColor implements VisionProcessor, CameraStreamSource {
+    private final AtomicReference<Bitmap> lastFrame =
+            new AtomicReference<>(Bitmap.createBitmap(1, 1, Bitmap.Config.RGB_565));
 
     double x = 640;
 
@@ -58,8 +67,10 @@ public class DetectColor implements VisionProcessor {
 
 
 
+
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
+
 
     }
 
@@ -76,7 +87,10 @@ public class DetectColor implements VisionProcessor {
                 new Scalar(hPurpleDown, cPurpleDown, vPurpleDown),
                 new Scalar(hPurpleUp, cPurpleUp, vPurpleUp),
                 imgPurple);
-
+        //max is pidor ebany
+        //suck my dick my boy
+        // maxim huesos tupoy
+        //msxim ne umeet igrat v basketball on ne negr
 
         Core.bitwise_or(imgGreen, imgPurple, frame);
 
@@ -108,6 +122,10 @@ public class DetectColor implements VisionProcessor {
             return 6;
         }
 
+        Bitmap b = Bitmap.createBitmap(frame.width(), frame.height(), Bitmap.Config.RGB_565);
+        Utils.matToBitmap(frame, b);
+        lastFrame.set(b);
+
 
         return frame;
     }
@@ -115,5 +133,10 @@ public class DetectColor implements VisionProcessor {
     @Override
     public void onDrawFrame(Canvas canvas, int onscreenWidth, int onscreenHeight, float scaleBmpPxToCanvasPx, float scaleCanvasDensity, Object userContext) {
 
+    }
+
+    @Override
+    public void getFrameBitmap(Continuation<? extends Consumer<Bitmap>> continuation) {
+        continuation.dispatch(bitmapConsumer -> bitmapConsumer.accept(lastFrame.get()));
     }
 }

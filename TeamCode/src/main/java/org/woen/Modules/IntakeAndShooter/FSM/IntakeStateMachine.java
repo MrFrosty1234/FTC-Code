@@ -16,7 +16,10 @@ public class IntakeStateMachine implements RobotModule {
     FSM_STATES targetState = FSM_STATES.EAT;
 
     Robot robot;
-
+    //max is pidor ebany
+    //suck my dick my boy
+    // maxim huesos tupoy
+    //msxim ne umeet igrat v basketball on ne negr
     DcMotorEx lGun;
 
     DcMotorEx rGun;
