@@ -5,6 +5,6 @@ package org.woen.Modules.IntakeAndShooter;
 //msxim ne umeet igrat v basketball on ne negr
 public enum FSM_STATES {
 
-    EAT, REVERSE_BRUSHES, SHOOT_NEAR, SHOOT_FAR, DRIVE;
+    EAT, REVERSE_BRUSHES, SHOOT_NEAR, REVERSE_ALL, DRIVE;
 
 }

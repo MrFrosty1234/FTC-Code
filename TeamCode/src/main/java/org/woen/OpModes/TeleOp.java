@@ -76,9 +76,19 @@ public class TeleOp extends LinearOpMode {
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
-            if (gamepad1.triangle) {
+            if (gamepad1.right_bumper) {
                 robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
+            }
 
+            if(gamepad1.left_trigger > 0.1){
+                robot.intakeStateMachine.setState(FSM_STATES.REVERSE_BRUSHES);
+            }
+            if(gamepad1.left_trigger < 0.1 && robot.intakeStateMachine.state != FSM_STATES.SHOOT_NEAR){
+                robot.intakeStateMachine.setState(FSM_STATES.EAT);
+            }
+
+            if(gamepad1.left_bumper && robot.intakeStateMachine.state != FSM_STATES.SHOOT_NEAR){
+                robot.intakeStateMachine.setState(FSM_STATES.REVERSE_ALL);
             }
 
             telemetry.addData("x", robot.odometry.getPosX());
