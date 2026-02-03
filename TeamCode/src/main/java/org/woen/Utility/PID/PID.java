@@ -13,7 +13,7 @@ public class PID {
     double pos;
     double target;
 
-    double[] kF = new double[3];
+    double[] kF = new double[4];
 
 
     public PID(double p, double i, double d, double f0, double f1, double f2, double f3) {

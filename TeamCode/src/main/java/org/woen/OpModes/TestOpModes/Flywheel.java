@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 @Config
 public class Flywheel {
     public static double ALPHA = 0.9;
-    public static double FEED_FORWARD_MULTIPLY = 0.000429;
-    public static double KP = 0.01;
+    public static double FEED_FORWARD_MULTIPLY = 0.001;
+    public static double KP = 0.1;
 
     private final DcMotorEx flywheel;
 

@@ -1,28 +1,32 @@
 package org.woen.Modules.IntakeAndShooter.FSM;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+
+import org.woen.Modules.IntakeAndShooter.ControlConst;
 import org.woen.Modules.IntakeAndShooter.FSM_STATES;
 import org.woen.Modules.Interface.RobotModule;
 import org.woen.Robot.Robot;
 
 public class IntakeStateMachine implements RobotModule {
 
-    FSM_STATES state = FSM_STATES.EAT;
+    FSM_STATES state = FSM_STATES.DRIVE;
 
-    FSM_STATES targetState = FSM_STATES.EAT;
+    FSM_STATES targetState = FSM_STATES.DRIVE;
 
     Robot robot;
     //max is pidor ebany
     //suck my dick my boy
     // maxim huesos tupoy
     //msxim ne umeet igrat v basketball on ne negr
-    DcMotorEx lGun;
 
-    DcMotorEx rGun;
+    DcMotorEx flow;
+
+    DcMotorEx brush;
 
     public IntakeStateMachine(Robot robot) {
         this.robot = robot;
@@ -36,14 +40,16 @@ public class IntakeStateMachine implements RobotModule {
     @Override
     public void init() {
         robot.servoMovement.init();
+        robot.shooter.init();
+        flow = robot.devicePool.flowMotor;
+        brush = robot.devicePool.brush;
 
-        rGun = robot.devicePool.shooterMotor;
+        flow.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        brush.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        lGun.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rGun.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-        lGun.setDirection(DcMotorSimple.Direction.FORWARD);
-        rGun.setDirection(DcMotorSimple.Direction.FORWARD);
+        flow.setDirection(DcMotorSimple.Direction.FORWARD);
+        brush.setDirection(DcMotorSimple.Direction.FORWARD);
+        time.reset();
     }
 
 
@@ -53,50 +59,39 @@ public class IntakeStateMachine implements RobotModule {
         switch (state) {
             case EAT:
                 targetState = FSM_STATES.EAT;
-                rGun.setPower(0.5);
-                lGun.setPower(0.5);
-
-                robot.servoMovement.wallClose();
-                robot.servoMovement.allAngleNear();
-                robot.servoMovement.allEat();
-                break;
-            case SHOOT_FAR:
-                targetState = FSM_STATES.EAT;
-                rGun.setPower(1);
-                lGun.setPower(1);
-
-                if (time.seconds() > 0.5) {
-                    robot.servoMovement.allAngleFar();
-                    robot.servoMovement.allShoot();
-                }
-                if (time.seconds() > 0.7) {
-                    robot.servoMovement.wallOpen();
-                }
-                setState(FSM_STATES.EAT);
+                robot.devicePool.wall.setPosition(0.8);
+                robot.servoMovement.anglePosNear();
+                flow.setPower(0.5);
+                brush.setPower(1);
+                robot.shooter.setTarget(ControlConst.nearVel);
                 break;
             case SHOOT_NEAR:
                 targetState = FSM_STATES.EAT;
-                rGun.setPower(1);
-                lGun.setPower(1);
 
+                robot.servoMovement.anglePosNear();
+                flow.setPower(1);
+                brush.setPower(0.3);
+                robot.shooter.setTarget(ControlConst.nearVel);
+                if (time.seconds() < 0.2) {
+                    robot.devicePool.wall.setPosition(0.8);
+                }
                 if (time.seconds() > 0.5) {
-                    robot.servoMovement.allAngleNear();
-                    robot.servoMovement.allShoot();
+                    robot.devicePool.wall.setPosition(0.4);
                 }
-                if (time.seconds() > 0.7) {
-                    robot.servoMovement.wallOpen();
+                if (time.seconds() > 1) {
+                    setState(FSM_STATES.EAT);
                 }
-                setState(FSM_STATES.EAT);
+                break;
+            case DRIVE:
                 break;
             case REVERSE_BRUSHES:
                 targetState = FSM_STATES.REVERSE_BRUSHES;
-                rGun.setPower(-1);
-                lGun.setPower(-1);
+                robot.devicePool.wall.setPosition(1);
+                robot.servoMovement.anglePosNear();
+                flow.setPower(-0.5);
+                brush.setPower(-0.5);
 
-                robot.servoMovement.allAngleNear();
-                robot.servoMovement.allShoot();
-                robot.servoMovement.wallClose();
-
+                robot.shooter.setTarget(ControlConst.nearVel);
                 break;
         }
     }
@@ -104,8 +99,12 @@ public class IntakeStateMachine implements RobotModule {
 
     @Override
     public void update() {
-        if(state == targetState)
+        if (state == targetState)
             time.reset();
         updateStates();
+
+        FtcDashboard.getInstance().getTelemetry().addData("timer", time.seconds());
+        FtcDashboard.getInstance().getTelemetry().update();
+
     }
 }

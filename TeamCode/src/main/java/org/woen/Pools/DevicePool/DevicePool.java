@@ -27,9 +27,7 @@ public class DevicePool {
 
 
 
-    public WebcamName camera;
 
-    private HardwareMap hardwareMap;
 
    public DcMotorEx brush;
 
@@ -41,11 +39,8 @@ public class DevicePool {
     public GoBildaPinpointDriver pinpoint;
 
 
-    public DevicePool(HardwareMap hardwareMap) {
-        this.hardwareMap = hardwareMap;
-    }
 
-    public void init() {
+    public void init(HardwareMap hardwareMap) {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
@@ -57,7 +52,7 @@ public class DevicePool {
 
         lMB = hardwareMap.get(DcMotorEx.class, "left_back_vehicle_motor");
 
-        rMF = hardwareMap.get(DcMotorEx.class, "right_back_vehicle_motor");
+        rMB = hardwareMap.get(DcMotorEx.class, "right_back_vehicle_motor");
 
         flowMotor = hardwareMap.get(DcMotorEx.class, "motor_flow");
 

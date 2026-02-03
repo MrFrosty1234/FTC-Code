@@ -24,6 +24,8 @@ public class Odometry implements RobotModule {
 
 
     Robot robot;
+    public GoBildaPinpointDriver pinpoint;
+
 
     public Odometry(Robot robot) {
         this.robot = robot;
@@ -31,10 +33,12 @@ public class Odometry implements RobotModule {
 
     @Override
     public void init() {
-        robot.devicePool.pinpoint.setOffsets(125, 75, DistanceUnit.MM);
-        robot.devicePool.pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        robot.devicePool.pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD,
+        pinpoint = robot.devicePool.pinpoint;
+        pinpoint.setOffsets(125, 75, DistanceUnit.MM);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
                 GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
     }
 
     public void reset(){
