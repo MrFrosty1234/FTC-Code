@@ -4,9 +4,11 @@ import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.woen.Utility.LEDLine;
 
 public class DevicePool {
 
@@ -26,10 +28,7 @@ public class DevicePool {
     public DcMotorEx shooterMotor;
 
 
-
-
-
-   public DcMotorEx brush;
+    public DcMotorEx brush;
 
     public Servo angleServo;
     public Servo wall;
@@ -38,6 +37,12 @@ public class DevicePool {
 
     public GoBildaPinpointDriver pinpoint;
 
+    public LEDLine light1;
+    public LEDLine light2;
+    public LEDLine light3;
+    public LEDLine light4;
+    public LEDLine light5;
+    public LEDLine light6;
 
 
     public void init(HardwareMap hardwareMap) {
@@ -63,6 +68,13 @@ public class DevicePool {
         angleServo = hardwareMap.get(Servo.class, "servo_angle_gun");
 
         towerAngleServo = hardwareMap.get(Servo.class, "servo_turn_tower");
+
+        light1 = new LEDLine(hardwareMap, "light0", LEDLine.SignalPin.MINUS);
+        light2 = new LEDLine(hardwareMap, "light1", LEDLine.SignalPin.MINUS);
+        light3 = new LEDLine(hardwareMap, "light2", LEDLine.SignalPin.MINUS);
+        light4 = new LEDLine(hardwareMap, "light3", LEDLine.SignalPin.MINUS);
+        light5 = new LEDLine(hardwareMap, "light4", LEDLine.SignalPin.MINUS);
+        light6 = new LEDLine(hardwareMap, "light5", LEDLine.SignalPin.MINUS);
 
     }
 }

@@ -5,10 +5,15 @@ import static com.qualcomm.robotcore.util.Range.clip;
 import static java.lang.Math.PI;
 import static java.lang.Math.abs;
 import static java.lang.Math.atan2;
+import static java.lang.Math.cos;
 import static java.lang.Math.decrementExact;
 import static java.lang.Math.max;
 import static java.lang.Math.negateExact;
 import static java.lang.Math.signum;
+import static java.lang.Math.sin;
+import static java.lang.Math.toRadians;
+
+import android.text.style.TtsSpan;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -28,16 +33,19 @@ import org.woen.Utility.PID.PID;
 public class DriveTrain implements RobotModule {
 
 
-    public static double pX = 0.0085;
-    public static double dX = 0.001;
-    public static double iX = 0;
+    public static double pX = 0.01;
+    public static double dX = 0.0015;
+    public static double iX = 0.001;
 
-    public static double pH = 0.0085;
-    public static double dH = 0.001;
+    public static double pH = 0.005;
+    public static double dH = 0;
     public static double iH = 0;
+    public static double pY = 0.01;
+    public static double dY = 0;
+    public static double yI = 0.001;
 
     PID pidAngle = new PID(pH,iH , dH, 0, 0, 0, 0); //TODO p,i,f
-    PID pidY = new PID(0.0085, 0.001, 0, 0, 0, 0, 0); //TODO p,i,f
+    PID pidY = new PID(pY, yI, dY, 0, 0, 0, 0); //TODO p,i,f
     PID pidX = new PID(pX, iX, dX, 0, 0, 0, 0); //TODO p,i,f
 
     Robot robot;
@@ -177,13 +185,11 @@ public class DriveTrain implements RobotModule {
         pidY.reset();
         pidAngle.reset();
 
+
         double errX = x - odometry.getPosX();
         double errY = y - odometry.getPosY();
         double errH = h - odometry.getPosH();
 
-        while (abs(errH) > 180) {
-            errH -= 360 * signum(errH);
-        }
 
 
         pidX.update(errX);
@@ -193,32 +199,23 @@ public class DriveTrain implements RobotModule {
         ElapsedTime elapsedTime = new ElapsedTime();
         time.reset();
 
-        FtcDashboard.getInstance().getTelemetry().addLine("In cycle");
-        FtcDashboard.getInstance().getTelemetry().update();
 
-        while((abs(errX) > 5 || abs(errY) > 5 || abs(errH) > 5) && time.seconds() < 5 &&  robot.linearOpMode.opModeIsActive()){
+        while((abs(errX) > 8 || abs(errY) > 8 || abs(errH) > 5) && time.seconds() < 5 &&  robot.linearOpMode.opModeIsActive()){
 
              errX = x - odometry.getPosX();
              errY = y - odometry.getPosY();
              errH = h - odometry.getPosH();
 
-            FtcDashboard.getInstance().getTelemetry().addData("isItTarget", isAtTarget(x,y,h));
-
-            while (abs(errH) > 180) {
-                errH -= 360 * signum(errH);
-            }
+            FtcDashboard.getInstance().getTelemetry().addData("pose", odometry.getPosH());
+            FtcDashboard.getInstance().getTelemetry().update();
 
             robot.update();
-
-            FtcDashboard.getInstance().getTelemetry().addData("target", y);
-            FtcDashboard.getInstance().getTelemetry().addData("pose", odometry.getPosY());
-            FtcDashboard.getInstance().getTelemetry().update();
 
             double powerX = pidX.update(errX);
             double powerY = pidY.update(errY);
             double powerH = pidAngle.update(errH);
 
-            setPower(-powerX, powerY, powerH);
+            setPowersField(powerX, powerY, powerH);
         }
 
 
@@ -235,6 +232,15 @@ public class DriveTrain implements RobotModule {
     public void setMode(DriveTrainMode mod){
         mode = mod;
     }
+
+
+    public void setPowersField(double x, double y, double heading) {
+        double angle = robot.odometry.getPosH();
+        double powersX = x * cos(toRadians(angle)) + y * sin(toRadians(angle));
+        double powersY = -x * sin(toRadians(angle)) + y * cos(toRadians(angle));
+        setPower(powersX, powersY, heading);
+    }
+
 
     @Override
     public void update() {

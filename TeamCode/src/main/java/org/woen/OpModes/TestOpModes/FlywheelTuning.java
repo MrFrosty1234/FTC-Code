@@ -33,7 +33,7 @@ public class FlywheelTuning extends LinearOpMode {
         while (opModeIsActive()) {
             flywheel.update(TARGET_TPS);
             motor.setPower(1);
-            brush.setPower(1);
+            brush.setPower(1  );
             telemetry.addData("TARGET_TPS", TARGET_TPS);
             telemetry.addData("rawTPS", flywheel.getRawTPS());
             telemetry.addData("filteredTPS", flywheel.getFilteredTPS());

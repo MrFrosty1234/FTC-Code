@@ -35,6 +35,13 @@ public class TeleOp extends LinearOpMode {
 
     public static double aimXY = 64 * 2.54;
 
+    public static double light0Pow = 1;//for red 0
+    public static double light1Pow = 0;//for red 1
+    public static double light2Pow = 1;//for red 0
+    public static double light3Pow = 0.07;// for red 0
+    public static double light4Pow = 0;// for red 0
+    public static double light5Pow = 1;// for red 1
+
 
 
 
@@ -90,6 +97,14 @@ public class TeleOp extends LinearOpMode {
             if(gamepad1.left_bumper && robot.intakeStateMachine.state != FSM_STATES.SHOOT_NEAR){
                 robot.intakeStateMachine.setState(FSM_STATES.REVERSE_ALL);
             }
+
+
+            robot.devicePool.light1.setPower(light0Pow);
+            robot.devicePool.light2.setPower(light1Pow);
+            robot.devicePool.light3.setPower(light2Pow);
+            robot.devicePool.light4.setPower(light3Pow);
+            robot.devicePool.light5.setPower(light4Pow);
+            robot.devicePool.light6.setPower(light5Pow);
 
             telemetry.addData("x", robot.odometry.getPosX());
 
