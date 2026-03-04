@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 
 import org.woen.Modules.DriveTrain.DriveTrain;
+import org.woen.Modules.IntakeAndShooter.ControlAngleTower;
 import org.woen.Modules.IntakeAndShooter.FSM.IntakeStateMachine;
 import org.woen.Modules.IntakeAndShooter.Shooter.Shooter;
 import org.woen.Modules.Odometery.Odometry;
@@ -36,16 +37,18 @@ public class Robot {
 
     public ServoMovement servoMovement = new ServoMovement(this);
     public IntakeStateMachine intakeStateMachine = new IntakeStateMachine(this);
+    public ControlAngleTower controlAngleTower = new ControlAngleTower(this);
 
     public Shooter shooter = new Shooter(this);
 
     public void init(){
-        devicePool.init(hardwareMap);
+       devicePool.init(hardwareMap);
        odometry.init();
        driveTrain.init();
        servoMovement.init();
        intakeStateMachine.init();
        shooter.init();
+       controlAngleTower.init();
 
     }
 
@@ -55,6 +58,7 @@ public class Robot {
         servoMovement.     update();
         intakeStateMachine.update();
         shooter.           update();
+        controlAngleTower. update();
     }
 
 

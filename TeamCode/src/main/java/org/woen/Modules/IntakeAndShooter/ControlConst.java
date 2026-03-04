@@ -9,11 +9,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class ControlConst {
-    public static double nearVel = 480;
+    public static double nearVel = 950;
     public static double farVel = 1600;
-    public static double angleContNear = 0.5;
+    public static double angleContNear = 0.2;
     public static double angleContFar = 0.85;
-    public static double startTowPos = 0.495;
+    public static double startTowPosAss = 0.51;
+
+    public static double startTowPosBrush = 0.49;
+
+    public static double ticksToTurn = (0.495 - 0.31) / 90.0;
 
     public static double powerToBrushes = 1;
 

@@ -33,12 +33,12 @@ import org.woen.Utility.PID.PID;
 public class DriveTrain implements RobotModule {
 
 
-    public static double pX = 0.01;
-    public static double dX = 0.0015;
-    public static double iX = 0.001;
+    public static double pX = 0.05;
+    public static double dX = 0.005;
+    public static double iX = 0;
 
-    public static double pH = 0.005;
-    public static double dH = 0;
+    public static double pH = 0.014;
+    public static double dH = 0.0001;
     public static double iH = 0;
     public static double pY = 0.01;
     public static double dY = 0;
@@ -200,13 +200,14 @@ public class DriveTrain implements RobotModule {
         time.reset();
 
 
-        while((abs(errX) > 8 || abs(errY) > 8 || abs(errH) > 5) && time.seconds() < 5 &&  robot.linearOpMode.opModeIsActive()){
+        while((abs(errX) > 8 || abs(errY) > 8 || abs(errH) > 4) && time.seconds() < 3 &&  robot.linearOpMode.opModeIsActive()){
 
              errX = x - odometry.getPosX();
              errY = y - odometry.getPosY();
              errH = h - odometry.getPosH();
 
             FtcDashboard.getInstance().getTelemetry().addData("pose", odometry.getPosH());
+            FtcDashboard.getInstance().getTelemetry().addData("target", h);
             FtcDashboard.getInstance().getTelemetry().update();
 
             robot.update();

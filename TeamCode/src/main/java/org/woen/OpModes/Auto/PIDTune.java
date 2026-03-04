@@ -6,39 +6,39 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.woen.Modules.IntakeAndShooter.ControlConst;
 import org.woen.Modules.IntakeAndShooter.FSM_STATES;
+import org.woen.OpModes.EvilEdje.Boot;
 import org.woen.Robot.Robot;
 
 
 @Autonomous
-public class Auto extends LinearOpMode {
+public class PIDTune extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
         Robot robot = new Robot(this, hardwareMap);
 
+        robot.controlAngleTower.setPosition(ControlConst.startTowPosAss);
+
         waitForStart();
 
         robot.init();
 
+        robot.odometry.setPosition(0,0,0);
 
-        robot.odometry.setPosition(-120,-40,0);
+
 
 
         while (opModeIsActive()){
-           robot.driveTrain.fieldMovement(-100,-40,0);
+            robot.driveTrain.fieldMovement(0,0,-90);
 
-            ElapsedTime timer = new ElapsedTime();
+            sleep(1000);
 
-            while(timer.seconds() < 1){
-                robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
-                robot.update();
-            }
+            robot.driveTrain.fieldMovement(0,0,90);
 
+            sleep(1000);
 
-
-            robot.driveTrain.fieldMovement(-120,-40,90);
-            robot.driveTrain.fieldMovement(-120,-80,90);
         }
     }
 
