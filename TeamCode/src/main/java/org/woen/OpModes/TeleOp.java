@@ -40,17 +40,20 @@ public class TeleOp extends LinearOpMode {
     public static double rightUp = 0.25;
     public static double leftUp = 0.25;
 
-    public static double rightDown = 0.;
-    public static double leftDown = 0.;
+    public static double rightDown = 0.5;
+    public static double leftDown = 0.5;
 
     public static double lStart = 0.5;
-    public static double rStart = 0.545;
+    public static double rStart = 0.5;
 
     public static double k = 2;
 
     public static double kArm = 12;
 
     double gamepdaStickOld = 0;
+
+    double rDifPos = 0.5;
+    double lDifPos = 0.5;
 
 
     @Override
@@ -87,8 +90,8 @@ public class TeleOp extends LinearOpMode {
 
         claw.setPosition(openClaw);
         arm.setPosition(armIn);
-        stageRight.setPosition(rightDown);
-        stageLeft.setPosition(leftDown);
+        stageRight.setPosition(0.81);
+        stageLeft.setPosition(0.18);
         lDif.setPosition(lStart);
         rDif.setPosition(rStart);
 
@@ -105,6 +108,9 @@ public class TeleOp extends LinearOpMode {
 
         double armPos = armIn;
         double armPosOld = armIn;
+
+        double rPosOld = 0.81;
+        double lPosOld = 0.18;
 
         armTimer.reset();
 
@@ -127,10 +133,10 @@ public class TeleOp extends LinearOpMode {
                     firstTouch = false;
                 }
 
-                rPos = rPos - timer.seconds() / k;
-                lPos = lPos - timer.seconds() / k;
-                lDif.setPosition(Range.clip(lPos, 0, 1));
-                rDif.setPosition(Range.clip(rPos, 0, 1));
+                rDifPos = rDifPos - timer.seconds() / k;
+                lDifPos = lDifPos - timer.seconds() / k;
+                lDif.setPosition(Range.clip(lDifPos, 0, 1));
+                rDif.setPosition(Range.clip(rDifPos, 0, 1));
             }
 
             if (gamepad1.left_bumper) {
@@ -140,35 +146,56 @@ public class TeleOp extends LinearOpMode {
                     firstTouch = false;
                 }
 
-                rPos = rPos + timer.seconds() / k;
-                lPos = lPos + timer.seconds() / k;
-                lDif.setPosition(Range.clip(lPos, 0, 1));
-                rDif.setPosition(Range.clip(rPos, 0, 1));
+                rDifPos = rDifPos + timer.seconds() / k;
+                lDifPos = lDifPos + timer.seconds() / k;
+                lDif.setPosition(Range.clip(lDifPos, 0, 1));
+                rDif.setPosition(Range.clip(rDifPos, 0, 1));
             }
 
             if (!gamepad1.left_bumper && !gamepad1.right_bumper)
                 firstTouch = true;
 
+
+
             if(abs(gamepad1.right_stick_y) != 0) {
                 armPos = armPosOld + armTimer.seconds() * (gamepad1.right_stick_y) ;
+
+                rPos = rPosOld + armTimer.seconds() * gamepad1.right_stick_y;
+                lPos = lPosOld - armTimer.seconds() * gamepad1.right_stick_y;
+                lPos = Range.clip(lPos, 0.18,0.61);
+                rPos = Range.clip(rPos, 0.38,0.81);
 
                 if(armPos > 0.95)
                     armPos = 0.95;
                 if(armPos < 0.5)
                     armPos = 0.5;
                 armPosOld = armPos;
-
+                rPosOld = rPos;
+                lPosOld = lPos;
             }else{
-                 armPos = armPosOld;
+                lPos = lPosOld;
+                rPos = rPosOld;
+                armPos = armPosOld;
                 armTimer.reset();
             }
+
+            if(gamepad1.cross){
+                lDif.setPosition(1);
+                rDif.setPosition(0);
+            }
+
 
 
             gamepdaStickOld = gamepad1.right_stick_y;
             telemetry.addData("armPos", armPos);
             telemetry.addData("armTimer", armTimer);
+            telemetry.addData("lPos", lPos);
+            telemetry.addData("rPos", rPos);
             telemetry.update();
+
             arm.setPosition(armPos);
+            stageLeft.setPosition(lPos);
+            stageRight.setPosition(rPos);
 
 
         }
