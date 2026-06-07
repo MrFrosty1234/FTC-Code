@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.woen.Modules.IntakeAndShooter.ControlConst;
 import org.woen.Modules.IntakeAndShooter.FSM_STATES;
-import org.woen.OpModes.EvilEdje.Boot;
+
 import org.woen.Robot.Robot;
 
 

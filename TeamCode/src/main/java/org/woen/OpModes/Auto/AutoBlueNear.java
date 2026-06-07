@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.woen.Modules.IntakeAndShooter.ControlConst;
 import org.woen.Modules.IntakeAndShooter.FSM_STATES;
-import org.woen.OpModes.EvilEdje.Boot;
 import org.woen.Robot.Robot;
 
 
@@ -21,78 +20,49 @@ public class AutoBlueNear extends LinearOpMode {
         robot.init();
 
 
-        robot.odometry.setPosition(-132, -128,53);
+        robot.odometry.setPosition(-156, -100, 0);
 
         while (opModeInInit())
-            robot.devicePool.towerAngleServo.setPosition(ControlConst.startTowPosAss + 0.01);
+            robot.devicePool.towerAngleServo.setPosition(0.675);
 
         waitForStart();
 
 
+        robot.driveTrain.fieldMovement(-60, -60, 0);
 
-        while (opModeIsActive()){
-            robot.driveTrain.fieldMovement(-60,-36,54);
+        ElapsedTime timer = new ElapsedTime();
 
-            ElapsedTime timer = new ElapsedTime();
-
-
-
-            while(timer.seconds() < 1.5){
-                robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
-                robot.update();
-            }
-
-            robot.driveTrain.fieldMovement(-27,-48,-95);
-            robot.intakeStateMachine.setState(FSM_STATES.EAT);
-            robot.devicePool.towerAngleServo.setPosition(0.75);
-            robot.driveTrain.fieldMovement(-31,-120,-95);
-
-            sleep(1000);
-
-            robot.driveTrain.fieldMovement(-27,-45,-95);
-
-            timer.reset();
-
-            while(timer.seconds() < 1.5){
-                robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
-                robot.update();
-            }
+        ControlConst.nearVel = 860;
 
 
-            robot.driveTrain.fieldMovement(32,-55,-90);
+        while (timer.seconds() < 1.5) {
+            robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
+            robot.update();
+        }
 
-            robot.driveTrain.fieldMovement(32,-145,-90);
-            sleep(750);
 
-            robot.driveTrain.fieldMovement(32,-55,-90);
+        ControlConst.nearVel = 950;
 
-            robot.driveTrain.fieldMovement(-27,-45,-90);
+        robot.devicePool.towerAngleServo.setPosition(0.85);
 
-            timer.reset();
+        robot.driveTrain.fieldMovement(32,-40,-90);
+        robot.driveTrain.fieldMovement(32,-160,-90);
 
-            while(timer.seconds() < 1.5){
-                robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
-                robot.update();
-            }
-            robot.driveTrain.fieldMovement(85,-55,-90);
+        robot.driveTrain.fieldMovement(32,-113,-90);
+        robot.driveTrain.fieldMovement(10,-140,-90);
 
-            robot.driveTrain.fieldMovement(85,-145,-90);
+        robot.driveTrain.fieldMovement(32,-55,-90);
 
-            sleep(750);
+        robot.driveTrain.fieldMovement(-27,-45,-90);
 
-            robot.driveTrain.fieldMovement(85,-55,-90);
 
-            robot.driveTrain.fieldMovement(-27,-45,-90);
 
-            timer.reset();
+        timer.reset();
 
-            while(timer.seconds() < 1.5){
-                robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
-                robot.update();
-            }
-            robot.driveTrain.fieldMovement(0,-55,-90);
-            break;
+        while(timer.seconds() < 1.5){
+            robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
+            robot.update();
         }
     }
-
 }
+

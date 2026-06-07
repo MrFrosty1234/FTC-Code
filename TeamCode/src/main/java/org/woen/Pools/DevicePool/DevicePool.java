@@ -37,44 +37,33 @@ public class DevicePool {
 
     public GoBildaPinpointDriver pinpoint;
 
-    public LEDLine light1;
-    public LEDLine light2;
-    public LEDLine light3;
-    public LEDLine light4;
-    public LEDLine light5;
-    public LEDLine light6;
+
 
 
     public void init(HardwareMap hardwareMap) {
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
-        shooterMotor = hardwareMap.get(DcMotorEx.class, "gun_motor_left");
+        shooterMotor = hardwareMap.get(DcMotorEx.class, "flywheel");
 
-        lMF = hardwareMap.get(DcMotorEx.class, "left_front_vehicle_motor");
+        lMF = hardwareMap.get(DcMotorEx.class, "br");
 
-        rMF = hardwareMap.get(DcMotorEx.class, "right_front_vehicle_motor");
+        rMF = hardwareMap.get(DcMotorEx.class, "bl");
 
-        lMB = hardwareMap.get(DcMotorEx.class, "left_back_vehicle_motor");
+        lMB = hardwareMap.get(DcMotorEx.class, "fr");
 
-        rMB = hardwareMap.get(DcMotorEx.class, "right_back_vehicle_motor");
+        rMB = hardwareMap.get(DcMotorEx.class, "fl");
 
-        flowMotor = hardwareMap.get(DcMotorEx.class, "motor_flow");
+        flowMotor = hardwareMap.get(DcMotorEx.class, "flow");
 
-        brush = hardwareMap.get(DcMotorEx.class, "motor_brush");
+        brush = hardwareMap.get(DcMotorEx.class, "intake");
 
-        wall = hardwareMap.get(Servo.class, "servo_door");
+        wall = hardwareMap.get(Servo.class, "door");
 
-        angleServo = hardwareMap.get(Servo.class, "servo_angle_gun");
+        angleServo = hardwareMap.get(Servo.class, "turret");
 
-        towerAngleServo = hardwareMap.get(Servo.class, "servo_turn_tower");
+        towerAngleServo = hardwareMap.get(Servo.class, "pitch");
 
-        light1 = new LEDLine(hardwareMap, "light0", LEDLine.SignalPin.MINUS);
-        light2 = new LEDLine(hardwareMap, "light1", LEDLine.SignalPin.MINUS);
-        light3 = new LEDLine(hardwareMap, "light2", LEDLine.SignalPin.MINUS);
-        light4 = new LEDLine(hardwareMap, "light3", LEDLine.SignalPin.MINUS);
-        light5 = new LEDLine(hardwareMap, "light4", LEDLine.SignalPin.MINUS);
-        light6 = new LEDLine(hardwareMap, "light5", LEDLine.SignalPin.MINUS);
 
     }
 }

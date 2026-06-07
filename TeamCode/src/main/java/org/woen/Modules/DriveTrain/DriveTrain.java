@@ -75,7 +75,7 @@ public class DriveTrain implements RobotModule {
 
         rF.setDirection(DcMotorSimple.Direction.FORWARD);
         lF.setDirection(DcMotorSimple.Direction.REVERSE);
-        rB.setDirection(DcMotorSimple.Direction.FORWARD);
+        rB.setDirection(DcMotorSimple.Direction.REVERSE);
         lB.setDirection(DcMotorSimple.Direction.REVERSE);
 
         rF.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -200,7 +200,7 @@ public class DriveTrain implements RobotModule {
         time.reset();
 
 
-        while((abs(errX) > 8 || abs(errY) > 8 || abs(errH) > 4) && time.seconds() < 3 &&  robot.linearOpMode.opModeIsActive()){
+        while((abs(errX) > 8 || abs(errY) > 8 || abs(errH) > 8) && time.seconds() < 3 &&  robot.linearOpMode.opModeIsActive()){
 
              errX = x - odometry.getPosX();
              errY = y - odometry.getPosY();

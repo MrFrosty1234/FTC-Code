@@ -66,10 +66,10 @@ public class IntakeStateMachine implements RobotModule {
         switch (state) {
             case EAT:
                 targetState = FSM_STATES.EAT;
-                robot.devicePool.wall.setPosition(0.8);
+                robot.devicePool.wall.setPosition(1);
                 robot.servoMovement.anglePosNear();
                 robot.devicePool.angleServo.setPosition(0.5);
-                flow.setPower(0.4);
+                flow.setPower(0.55);
                /* if(timerToFlow.milliseconds() < 200) {
                     flow.setPower(0.4);
                 }
@@ -92,7 +92,7 @@ public class IntakeStateMachine implements RobotModule {
 
                 robot.shooter.setTarget(ControlConst.nearVel);
                 if (time.seconds() > 0.1) {
-                    robot.devicePool.wall.setPosition(0.4);
+                    robot.devicePool.wall.setPosition(0.65);
                     flow.setPower(1);
                 }
                 if (time.seconds() > 1.5) {
@@ -103,7 +103,7 @@ public class IntakeStateMachine implements RobotModule {
                 break;
             case REVERSE_BRUSHES:
                 targetState = FSM_STATES.REVERSE_BRUSHES;
-                robot.devicePool.wall.setPosition(0.8);
+                robot.devicePool.wall.setPosition(1);
                 robot.devicePool.angleServo.setPosition(0.5);
                 robot.servoMovement.anglePosNear();
                 flow.setPower(0);
@@ -113,7 +113,7 @@ public class IntakeStateMachine implements RobotModule {
                 break;
             case REVERSE_ALL:
                 targetState = FSM_STATES.REVERSE_BRUSHES;
-                robot.devicePool.wall.setPosition(0.8);
+                robot.devicePool.wall.setPosition(1);
                 robot.servoMovement.anglePosNear();
                 flow.setPower(-1);
                 brush.setPower(-1);

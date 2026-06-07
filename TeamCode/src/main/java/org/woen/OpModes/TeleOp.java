@@ -1,7 +1,8 @@
 package org.woen.OpModes;
 
 
-import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
+import static java.lang.Math.abs;
+import static java.lang.Math.signum;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -10,129 +11,167 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.opencv.core.Mat;
-import org.woen.Modules.IntakeAndShooter.ControlConst;
-import org.woen.Modules.IntakeAndShooter.FSM_STATES;
-import org.woen.Robot.Robot;
-import org.woen.Utility.PID.PID;
-import org.woen.Utility.Vector2D;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp
 @Config
 public class TeleOp extends LinearOpMode {
 
-    DcMotor rFM;
-    DcMotor lFM;
-    DcMotor rRM;
-    DcMotor lRM;
+    DcMotor rSides;
+    DcMotor lSides;
+    DcMotor rMid;
+    DcMotor lMid;
 
-    Robot robot;
+    Servo claw;
+    Servo arm;
+    Servo rDif;
+    Servo lDif;
+    Servo stageLeft;
+    Servo stageRight;
 
-    PID angleController = new PID(0.005,0,0.0001,0,0,0,0);
+    public static double openClaw = 0.25;
+    public static double closeClaw = 0.8;
 
-    public static double aimXY = 64 * 2.54;
+    public static double armIn = 0.9;
+    public static double armFar = 0.1;
 
-    public static double light0Pow = 1;//for red 0
-    public static double light1Pow = 0;//for red 1
-    public static double light2Pow = 1;//for red 0
-    public static double light3Pow = 0.07;// for red 0
-    public static double light4Pow = 0;// for red 0
-    public static double light5Pow = 1;// for red 1
+    public static double rightUp = 0.25;
+    public static double leftUp = 0.25;
 
+    public static double rightDown = 0.;
+    public static double leftDown = 0.;
 
+    public static double lStart = 0.5;
+    public static double rStart = 0.545;
+
+    public static double k = 2;
+
+    public static double kArm = 12;
+
+    double gamepdaStickOld = 0;
 
 
     @Override
     public void runOpMode() throws InterruptedException {
 
-        robot = new Robot(this, hardwareMap);
 
         waitForStart();
-        lFM = hardwareMap.get(DcMotorEx.class, "left_front_vehicle_motor");
+        lSides = hardwareMap.get(DcMotorEx.class, "lS");
 
-        rFM = hardwareMap.get(DcMotorEx.class, "right_front_vehicle_motor");
+        rSides = hardwareMap.get(DcMotorEx.class, "rS");
 
-        lRM = hardwareMap.get(DcMotorEx.class, "left_back_vehicle_motor");
+        lMid = hardwareMap.get(DcMotorEx.class, "lM");
 
-        rRM = hardwareMap.get(DcMotorEx.class, "right_back_vehicle_motor");
-        lFM.setDirection(DcMotorSimple.Direction.FORWARD);
-        lRM.setDirection(DcMotorSimple.Direction.FORWARD);
-        rFM.setDirection(DcMotorSimple.Direction.REVERSE);
-        rRM.setDirection(DcMotorSimple.Direction.REVERSE);
+        rMid = hardwareMap.get(DcMotorEx.class, "rM");
 
-        lFM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        lRM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rRM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rFM.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lDif = hardwareMap.get(Servo.class, "lDif");
+        rDif = hardwareMap.get(Servo.class, "rDif");
 
-         robot.init();
-        while (opModeInInit())
-            robot.odometry.setPosition(ControlConst.redGoal.getX(CM),ControlConst.redGoal.getY(CM), ControlConst.redGoal.getHeading(AngleUnit.DEGREES));
+        lSides.setDirection(DcMotorSimple.Direction.FORWARD);
+        lMid.setDirection(DcMotorSimple.Direction.FORWARD);
+        rSides.setDirection(DcMotorSimple.Direction.REVERSE);
+        rMid.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        Vector2D aimVec = new Vector2D(-aimXY, aimXY).getSubtracted(new Vector2D(robot.odometry.getPosX(), robot.odometry.getPosY()));
+        lSides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        lMid.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rMid.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rSides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        claw = hardwareMap.get(Servo.class, "claw");
+        arm = hardwareMap.get(Servo.class, "arm");
+        stageLeft = hardwareMap.get(Servo.class, "stageLeft");
+        stageRight = hardwareMap.get(Servo.class, "stageRight");
+
+
+        claw.setPosition(openClaw);
+        arm.setPosition(armIn);
+        stageRight.setPosition(rightDown);
+        stageLeft.setPosition(leftDown);
+        lDif.setPosition(lStart);
+        rDif.setPosition(rStart);
+
+        double rPos = rStart;
+        double lPos = lStart;
+
+        boolean oldBut = true;
+
+        boolean firstTouch = true;
+
+        ElapsedTime timer = new ElapsedTime();
+
+        ElapsedTime armTimer = new ElapsedTime();
+
+        double armPos = armIn;
+        double armPosOld = armIn;
+
+        armTimer.reset();
 
         while (opModeIsActive()) {
             double x = gamepad1.left_stick_y;
-            double y = gamepad1.left_stick_x;
-            double angle = -gamepad1.right_stick_x;
+            double angle = -gamepad1.left_stick_x;
 
 
             telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+            lSides.setPower(x - angle);
+            rSides.setPower(x + angle);
+            lMid.setPower(x - angle);
+            rMid.setPower(x + angle);
 
             if (gamepad1.right_bumper) {
-                robot.intakeStateMachine.setState(FSM_STATES.SHOOT_NEAR);
+
+                if (firstTouch) {
+                    timer.reset();
+                    firstTouch = false;
+                }
+
+                rPos = rPos - timer.seconds() / k;
+                lPos = lPos - timer.seconds() / k;
+                lDif.setPosition(Range.clip(lPos, 0, 1));
+                rDif.setPosition(Range.clip(rPos, 0, 1));
             }
 
-            if(gamepad1.left_trigger > 0.1){
-                robot.intakeStateMachine.setState(FSM_STATES.REVERSE_BRUSHES);
+            if (gamepad1.left_bumper) {
+
+                if (firstTouch) {
+                    timer.reset();
+                    firstTouch = false;
+                }
+
+                rPos = rPos + timer.seconds() / k;
+                lPos = lPos + timer.seconds() / k;
+                lDif.setPosition(Range.clip(lPos, 0, 1));
+                rDif.setPosition(Range.clip(rPos, 0, 1));
             }
-            if(gamepad1.left_trigger < 0.1 && robot.intakeStateMachine.state != FSM_STATES.SHOOT_NEAR){
-                robot.intakeStateMachine.setState(FSM_STATES.EAT);
+
+            if (!gamepad1.left_bumper && !gamepad1.right_bumper)
+                firstTouch = true;
+
+            if(abs(gamepad1.right_stick_y) != 0) {
+                armPos = armPosOld + armTimer.seconds() * (gamepad1.right_stick_y) ;
+
+                if(armPos > 0.95)
+                    armPos = 0.95;
+                if(armPos < 0.5)
+                    armPos = 0.5;
+                armPosOld = armPos;
+
+            }else{
+                 armPos = armPosOld;
+                armTimer.reset();
             }
 
-            if(gamepad1.left_bumper && robot.intakeStateMachine.state != FSM_STATES.SHOOT_NEAR){
-                robot.intakeStateMachine.setState(FSM_STATES.REVERSE_ALL);
-            }
 
-
-            robot.devicePool.light1.setPower(light0Pow);
-            robot.devicePool.light2.setPower(light1Pow);
-            robot.devicePool.light3.setPower(light2Pow);
-            robot.devicePool.light4.setPower(light3Pow);
-            robot.devicePool.light5.setPower(light4Pow);
-            robot.devicePool.light6.setPower(light5Pow);
-
-            telemetry.addData("x", robot.odometry.getPosX());
-
-            telemetry.addData("y", robot.odometry.getPosY());
-
-            telemetry.addData("h", robot.odometry.getPosH());
-
+            gamepdaStickOld = gamepad1.right_stick_y;
+            telemetry.addData("armPos", armPos);
+            telemetry.addData("armTimer", armTimer);
             telemetry.update();
+            arm.setPosition(armPos);
 
-            if(gamepad1.right_trigger > 0.1){
-                angle = angleController.update(minAngleError(Math.toRadians(aimVec.getAngle()) - backAngle(robot.odometry.getPosH())));
-            }
-            else{
-                angleController.reset();
-            }
 
-            robot.driveTrain.setPower(x, y, angle);
-
-             robot.update();
         }
-    }
-
-    double backAngle(double angle) {
-        return angle + (angle > 0 ? -180 : 180);
-    }
-
-    double minAngleError(double rawAngleError) {
-        return rawAngleError + (rawAngleError < -180 ? 360 : rawAngleError > 180 ? -360 : 0);
     }
 
 }

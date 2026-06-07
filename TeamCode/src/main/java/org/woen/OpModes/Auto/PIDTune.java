@@ -7,8 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.woen.Modules.IntakeAndShooter.ControlConst;
-import org.woen.Modules.IntakeAndShooter.FSM_STATES;
-import org.woen.OpModes.EvilEdje.Boot;
+
 import org.woen.Robot.Robot;
 
 
@@ -31,11 +30,11 @@ public class PIDTune extends LinearOpMode {
 
 
         while (opModeIsActive()){
-            robot.driveTrain.fieldMovement(0,0,-90);
+            robot.driveTrain.fieldMovement(100,0,0);
 
             sleep(1000);
 
-            robot.driveTrain.fieldMovement(0,0,90);
+            robot.driveTrain.fieldMovement(0,0,0);
 
             sleep(1000);
 

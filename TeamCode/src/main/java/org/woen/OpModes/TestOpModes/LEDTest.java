@@ -99,12 +99,7 @@ public class LEDTest extends LinearOpMode {
             }
 
 
-            robot.devicePool.light1.setPower(light0Pow);
-            robot.devicePool.light2.setPower(light1Pow);
-            robot.devicePool.light3.setPower(light2Pow);
-            robot.devicePool.light4.setPower(light3Pow);
-            robot.devicePool.light5.setPower(light4Pow);
-            robot.devicePool.light6.setPower(light5Pow);
+
 
             telemetry.addData("x", robot.odometry.getPosX());
 
